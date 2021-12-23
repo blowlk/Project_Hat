@@ -96,13 +96,14 @@ class Field {
     }
   }
 
-  static isFieldSolvable(inpField){
+  static isFieldSolvable(checkField){
     let playerX;
     let playerY;
     let hatX;
     let hatY;
     let fieldCount = 0;
     let checkPath = true, hardWay = false;
+    let inpField = checkField.slice();
     //let moveDirection = 1;
     let descisionPoint =[];
     let tmp1,tmp2,tmp3,tmp4,tmpDir=0;
@@ -126,7 +127,7 @@ class Field {
     //
     let step;
     while (checkPath){
-      let key = prompt('Proceed? '/*\n'+'player:x'+playerX+';player:y'+playerY+'\n'+'hatx:'+hatX+';haty:'+hatY*/);
+      //let key = prompt('Proceed? '/*\n'+'player:x'+playerX+';player:y'+playerY+'\n'+'hatx:'+hatX+';haty:'+hatY*/);
       step = 0;
       //check available side
       try{if(inpField[playerX-1][playerY]==fieldCharacter){tmp1=Math.abs(playerX-1-hatX)+Math.abs(playerY-hatY)};} catch(err){}
@@ -223,7 +224,7 @@ class Field {
         }
       }
       inpField[playerX][playerY]=pathCharacter
-      Field.print(inpField);
+      //Field.print(inpField);
       
     }
   }
@@ -280,9 +281,21 @@ class Field {
       }
     }
 }
-  const generatedField = Field.generateField(15,25,20);
   
-  /*const myField = new Field(generatedField,"HARD");
-  myField.playGame();*/
+ //
+ let generatedField =[[]];
+ let startGame = false;
+ for(i=0;i<100;i++)
+ {
+   generatedField = Field.generateField(15,25,20)
+   if(Field.isFieldSolvable(generatedField)){startGame=true;break}
+  }
   
-  console.log(Field.isFieldSolvable(generatedField));
+  if(startGame)
+  {
+  const myField = new Field(generatedField,"HARD");
+  myField.playGame();
+ }
+ else{console.log('Please choose another parameters for field generation!')}
+  
+  

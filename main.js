@@ -225,27 +225,52 @@ class Field {
     }
   }
 
-  playGame(){
-    let endGame = false;
-    let x=0;
-    let y=0;
-    // get player position
-    for(let i=0;i<this._field.length;i++){
-      for(let j=0;j<this._field[i].length;j++){
-        if (this._field[i][j]==pathCharacter){
-          x=i;y=j;break;
-        }
+playGame()
+{
+  let endGame = false;
+  let x=0, y=0;
+  let key;
+  // get player position
+  for(let i=0;i<this._field.length;i++){
+    for(let j=0;j<this._field[i].length;j++){
+      if (this._field[i][j]==pathCharacter){
+        x=i;y=j;break;
       }
     }
-    //
-    let maxX = this._field.length;
-    // start game
-    while (!endGame){
-    Field.print(this._field);
-    let key = prompt('Which way? (l=left, r-right, u-up, d-down): ');
-    key = key.toUpperCase();
-    // check key
-    if (!(moves.includes(key))){ console.log('Wrong KEY!');continue;}
+  }
+  // get maximum length
+  let maxX = this._field.length;
+  // start game
+  while (!endGame)
+  {
+    let proceed=false;
+    let wrongKey=false;
+    while (!proceed)
+    { 
+      Field.print(this._field);
+      if(!wrongKey)
+      {
+        key = prompt('Which way? (l-left, r-right, u-up, d-down): ')
+      }
+      else
+      {
+        key = prompt('Wrong Key, Please Use "L" for left, "R" for right, "U" for up and "D" for down:')
+      };
+      //
+      key = key.toUpperCase();
+      // check key
+      if (!(moves.includes(key)))
+      {
+        wrongKey=true;
+        proceed=false;
+        continue;
+      }
+      else
+      {
+        wrongKey=false;
+        proceed=true;
+      }
+    }
     // make move
     let maxY = this._field[x].length;
       try{
@@ -272,7 +297,7 @@ class Field {
           this._field[x][y]=pathCharacter;
           if(this._mode = 'HARD'){this.addHoles(2)}
       }
-      catch(err){console.log(err)}
+      catch(err){console.log(err);break;}
       }
     }
 }

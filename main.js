@@ -13,7 +13,7 @@ class Field {
     }
   
   static print(field){
-      console.clear()
+      //console.clear()
       for(let i=0;i<field.length;i++)
       { 
         console.log(field[i].join(''))
@@ -82,7 +82,7 @@ class Field {
         }
       }
     }
-    //console.log(clearCount)
+    //add holes
     for(let i=0;i<Math.min(holesCount,clearCount);i++){
       while (true)
       { let holeX = Math.floor(Math.random()*this._field.length);
@@ -96,14 +96,14 @@ class Field {
     }
   }
 
-  static isFieldSolvable(checkField){
+  static isFieldSolvable(checkField,printProgress=false){
     let playerX;
     let playerY;
     let hatX;
     let hatY;
     let fieldCount = 0;
     let checkPath = true, hardWay = false;
-    let inpField = checkField.slice();
+    let inpField = checkField.map(function(arr) {return arr.slice();});
     //let moveDirection = 1;
     let descisionPoint =[];
     let tmp1,tmp2,tmp3,tmp4,tmpDir=0;
@@ -122,12 +122,12 @@ class Field {
       }
     }
     //
-    Field.print(inpField);
+    if(printProgress){Field.print(inpField)};
     descisionPoint.push([playerX,playerY]);
     //
     let step;
     while (checkPath){
-      //let key = prompt('Proceed? '/*\n'+'player:x'+playerX+';player:y'+playerY+'\n'+'hatx:'+hatX+';haty:'+hatY*/);
+      if(printProgress){let key = prompt('Proceed? '/*\n'+'player:x'+playerX+';player:y'+playerY+'\n'+'hatx:'+hatX+';haty:'+hatY*/)};
       step = 0;
       //check available side
       try{if(inpField[playerX-1][playerY]==fieldCharacter){tmp1=Math.abs(playerX-1-hatX)+Math.abs(playerY-hatY)};} catch(err){}
@@ -135,10 +135,10 @@ class Field {
       try{if(inpField[playerX][playerY-1]==fieldCharacter){tmp3=Math.abs(playerX-hatX)+Math.abs(playerY-1-hatY)};} catch(err){}
       try{if(inpField[playerX][playerY+1]==fieldCharacter){tmp4=Math.abs(playerX-hatX)+Math.abs(playerY+1-hatY)};} catch(err){}
       // check if the end is near :)
-      if((isNaN(tmp1) ? 0 : tmp1)==1){inpField[playerX-1][playerY]=pathCharacter;Field.print(inpField);return true;}
-      if((isNaN(tmp2) ? 0 : tmp2)==1){inpField[playerX+1][playerY]=pathCharacter;Field.print(inpField);return true;}
-      if((isNaN(tmp3) ? 0 : tmp3)==1){inpField[playerX][playerY-1]=pathCharacter;Field.print(inpField);return true;}
-      if((isNaN(tmp4) ? 0 : tmp4)==1){inpField[playerX][playerY+1]=pathCharacter;Field.print(inpField);return true;}
+      if((isNaN(tmp1) ? 0 : tmp1)==1){inpField[playerX-1][playerY]=pathCharacter;if(printProgress){Field.print(inpField)};return true;}
+      if((isNaN(tmp2) ? 0 : tmp2)==1){inpField[playerX+1][playerY]=pathCharacter;if(printProgress){Field.print(inpField)};return true;}
+      if((isNaN(tmp3) ? 0 : tmp3)==1){inpField[playerX][playerY-1]=pathCharacter;if(printProgress){Field.print(inpField)};return true;}
+      if((isNaN(tmp4) ? 0 : tmp4)==1){inpField[playerX][playerY+1]=pathCharacter;if(printProgress){Field.print(inpField)};return true;}
       // remember other choices
       if ((isNaN(tmp1) ? 0 : tmp1)==(isNaN(tmp2) ? Infinity : tmp2)){
         descisionPoint.push([playerX+1,playerY])
@@ -181,7 +181,7 @@ class Field {
       }
       else{
         { 
-          //console.log(descisionPoint)
+          //check if other descision point exists
           if (descisionPoint.length>0)
           {
             if(hardWay){hardWay=false}
@@ -196,13 +196,11 @@ class Field {
         }
         if(hardWay)
         {
-          //console.log('HARD WAY CHECK')
           // read field and already passed path, get available turns
           for(let i=0;i<inpField.length;i++){
             for(let j=0;j<inpField[i].length;j++){
               if (inpField[i][j]==pathCharacter)
               {
-                //console.log((i+1)+':'+(j+1))
                 let maxTempX = Math.max(i-1,0);
                 let minTempX = Math.min(i+1,inpField.length-1);
                 let maxTempY = Math.max(j-1,0);
@@ -212,7 +210,6 @@ class Field {
                  ||inpField[i][maxTempY]==fieldCharacter
                  ||inpField[i][minTempY]==fieldCharacter
                   ){descisionPoint.push([i,j])
-                    //console.log(descisionPoint)
                   };break;
               }
               if (inpField[i][j]==fieldCharacter){
@@ -220,11 +217,10 @@ class Field {
               }
             }
           }
-          //console.log(descisionPoint)
         }
       }
       inpField[playerX][playerY]=pathCharacter
-      //Field.print(inpField);
+      if(printProgress){Field.print(inpField)};
       
     }
   }
@@ -271,7 +267,6 @@ class Field {
               else{y+=1}
               break;
           };
-          //console.log(this._field[x][y])
           if (this._field[x][y] == hole){console.log('Sorry, you fell down into a hole');endGame=true}
           if (this._field[x][y] == hat){console.log('Congratulation!!! You found your hat!!!');endGame=true}
           this._field[x][y]=pathCharacter;
@@ -282,20 +277,23 @@ class Field {
     }
 }
   
- //
- let generatedField =[[]];
- let startGame = false;
- for(i=0;i<100;i++)
- {
-   generatedField = Field.generateField(15,25,20)
-   if(Field.isFieldSolvable(generatedField)){startGame=true;break}
-  }
-  
-  if(startGame)
-  {
+// generate field and check if solvable with current settings
+let generatedField =[[]];
+let startGame = false;
+for(i=0;i<100;i++)
+{
+  generatedField = Field.generateField(15,25,20)
+  if(Field.isFieldSolvable(generatedField)){startGame=true;break}
+}
+// start game
+if(startGame)
+{
   const myField = new Field(generatedField,"HARD");
   myField.playGame();
- }
- else{console.log('Please choose another parameters for field generation!')}
+}
+else
+{
+  console.log('Please choose another parameters for field generation!')
+}
   
   

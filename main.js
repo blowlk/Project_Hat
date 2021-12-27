@@ -1,15 +1,18 @@
 const prompt = require('prompt-sync')({sigint: true});
 
+
 const hat = '^';
 const hole = 'O';
 const fieldCharacter = '░';
 const pathCharacter = '*';
 const moves = ['U','D','L','R']
+const altMoves = ['A','S','D','W']
 
 class Field {
-    constructor(field= [[]],mode='normal'){
+    constructor(field= [[]],mode='normal',moveType=1){
       this._field = field
       this._mode = mode
+      this._moveType = moveType
     }
   
   static print(field){
@@ -248,18 +251,21 @@ playGame()
     while (!proceed)
     { 
       Field.print(this._field);
-      if(!wrongKey)
-      {
-        key = prompt('Which way? (l-left, r-right, u-up, d-down): ')
-      }
-      else
-      {
-        key = prompt('Wrong Key, Please Use "L" for left, "R" for right, "U" for up and "D" for down:')
+      let promptText;
+      if(this._moveType==1){
+        if(!wrongKey){promptText = 'Which way? (l-left, r-right, u-up, d-down): '}
+        else{promptText = 'Wrong Key, Please Use "L" for left, "R" for right, "U" for up and "D" for down:'}
       };
+      if(this._moveType==2){
+        if(!wrongKey){promptText = 'Which way? (a-left, d-right, w-up, s-down): '}
+        else{promptText = 'Wrong Key, Please Use "A" for left, "D" for right, "W" for up and "S" for down:'}
+      };
+      
+      key = prompt(promptText);
       //
       key = key.toUpperCase();
       // check key
-      if (!(moves.includes(key)))
+      if (this._moveType ==1 && !(moves.includes(key)) || this._moveType == 2 && !(altMoves.includes(key)))
       {
         wrongKey=true;
         proceed=false;
@@ -274,24 +280,48 @@ playGame()
     // make move
     let maxY = this._field[x].length;
       try{
-          switch (key){
-            case "D" :
-                if(x+1>=maxX){console.log('Sorry, you lost, out of bounds');endGame=true}
-                else{x+=1}
-              break;
-            case "U" :
-              if(x-1<0){console.log('Sorry, you lost, out of bounds');endGame=true}
-              else{x-=1;}
-              break;
-            case "L" :
-              if(y-1<0){console.log('Sorry, you lost, out of bounds');endGame=true}
-              else{y-=1}
-              break;
-            case "R" :
-              if(y+1>=maxY){console.log('Sorry, you lost, out of bounds');endGame=true}
-              else{y+=1}
-              break;
-          };
+        if (this._moveType==1){
+            switch (key)
+            {
+              case "D" :
+                  if(x+1>=maxX){console.log('Sorry, you lost, out of bounds');endGame=true}
+                  else{x+=1}
+                break;
+              case "U" :
+                if(x-1<0){console.log('Sorry, you lost, out of bounds');endGame=true}
+                else{x-=1;}
+                break;
+              case "L" :
+                if(y-1<0){console.log('Sorry, you lost, out of bounds');endGame=true}
+                else{y-=1}
+                break;
+              case "R" :
+                if(y+1>=maxY){console.log('Sorry, you lost, out of bounds');endGame=true}
+                else{y+=1}
+                break;
+            };
+          }
+          if (this._moveType==2){
+            switch (key)
+            {
+              case "S" :
+                  if(x+1>=maxX){console.log('Sorry, you lost, out of bounds');endGame=true}
+                  else{x+=1}
+                break;
+              case "W" :
+                if(x-1<0){console.log('Sorry, you lost, out of bounds');endGame=true}
+                else{x-=1;}
+                break;
+              case "A" :
+                if(y-1<0){console.log('Sorry, you lost, out of bounds');endGame=true}
+                else{y-=1}
+                break;
+              case "D" :
+                if(y+1>=maxY){console.log('Sorry, you lost, out of bounds');endGame=true}
+                else{y+=1}
+                break;
+            };
+          }
           if (this._field[x][y] == hole){console.log('Sorry, you fell down into a hole');endGame=true}
           if (this._field[x][y] == hat){console.log('Congratulation!!! You found your hat!!!');endGame=true}
           this._field[x][y]=pathCharacter;
@@ -313,7 +343,7 @@ for(i=0;i<100;i++)
 // start game
 if(startGame)
 {
-  const myField = new Field(generatedField,"HARD");
+  const myField = new Field(generatedField,"HARD",2);
   myField.playGame();
 }
 else

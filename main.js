@@ -260,10 +260,21 @@ playGame()
         if(!wrongKey){promptText = 'Which way? (a-left, d-right, w-up, s-down): '}
         else{promptText = 'Wrong Key, Please Use "A" for left, "D" for right, "W" for up and "S" for down:'}
       };
-      
+      //
       key = prompt(promptText);
       //
       key = key.toUpperCase();
+      //
+      if (key=="/")
+      {
+        if(Field.isFieldSolvable(generatedField,true))
+        {
+          proceed=false;
+          endGame=true;
+          break;
+        }
+      }
+      //
       // check key
       if (this._moveType ==1 && !(moves.includes(key)) || this._moveType == 2 && !(altMoves.includes(key)))
       {
